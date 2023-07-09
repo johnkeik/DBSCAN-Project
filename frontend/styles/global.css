@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* @import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities"; */
+
+@layer components {
+  .test-link {
+    @apply pb-10;
+  }
+  .navbar-link {
+    @apply pb-6 md:pb-0 text-lg  text-levanta-dark py-2 px-2 text-center  border-b-2 md:border-b-0 
+       hover:text-purple-600 duration-300 hover:scale-110  border-purple-900  md:hover:text-purple-600 md:hover:bg-transparent animate-rise;
+  }
+  .navbar-link-custom {
+    @apply text-lg  text-levanta-dark py-2 px-2 text-center
+       hover:text-purple-600 duration-300 hover:scale-110  border-purple-900;
+  }
+  .navbar-link-custom-drawer {
+    @apply text-lg  text-levanta-dark py-1 px-2 text-start z-[1]
+       hover:text-purple-600 duration-300 hover:scale-110  border-purple-900  animate-rise;
+  }
+
+  .dashboard-input {
+    @apply mb-3 outline-none text-slate-900 p-2 w-full max-w-[40ch] min-h-[4ch] duration-300 border-b-2 border-solid border-black focus:border-cyan-500 focus:outline-none;
+  }
+
+  .screen-title {
+    @apply text-xl lg:text-2xl text-levanta-dark font-bold animate-slide-from-left text-center flex-grow;
+  }
+
+  .products-nav-link {
+    @apply hover:text-levanta-hover mr-5 duration-300 hover:scale-110 md:text-xl text-center underline;
+  }
+}

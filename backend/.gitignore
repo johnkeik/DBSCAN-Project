@@ -1,0 +1,11 @@
+node_modules/*
+
+.vscode
+
+.DS_Store
+
+.env
+
+datasets/temp/*
+
+dist/*
