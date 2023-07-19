@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   applyDBSCAN,
+  deleteTempFiles,
   fetchDataset,
   fetchPlotImage,
   fetchPublicDatasets,
@@ -15,4 +16,6 @@ router.get("/fetchDataset", fetchDataset);
 router.get("/findEpsilonAsGuest", findEpsilonAsGuest);
 router.get("/fetchPlotImage", fetchPlotImage);
 router.get("/applyDBSCAN", applyDBSCAN);
+router.delete("/deleteTempFiles", deleteTempFiles);
+
 export default router;

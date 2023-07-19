@@ -18,7 +18,7 @@ const DatasetTableCompoent = ({
   isTempDataset,
 }: {
   filename: string;
-  setDatasetHeaders: Dispatch<SetStateAction<string[]>>;
+  setDatasetHeaders?: Dispatch<SetStateAction<string[]>>;
   setNumericalDatasetHeaders?: Dispatch<SetStateAction<string[]>>;
   isTempDataset?: boolean;
 }) => {
@@ -45,7 +45,7 @@ const DatasetTableCompoent = ({
       }).then((response) => {
         if (response) {
           setData(response);
-          setDatasetHeaders(response.header);
+          setDatasetHeaders && setDatasetHeaders(response.header);
           setNumericalDatasetHeaders &&
             setNumericalDatasetHeaders(response.numericalHeaders);
         } else {

@@ -1,5 +1,5 @@
 import { Button, Form, FormInstance, Input } from "antd";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 const LoginForm = ({
   setPage,
@@ -30,7 +30,6 @@ const LoginForm = ({
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const formRef = React.useRef<FormInstance>(null);
-
   const handleSubmit = async (values: {
     username: string;
     password: string;

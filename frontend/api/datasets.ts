@@ -97,3 +97,27 @@ export const applyDBSCAN = async ({
     return null;
   }
 };
+
+export const clearTempFiles = async ({
+  tempFileNames,
+}: {
+  tempFileNames: string[];
+}) => {
+  const data = {
+    tempFileNames,
+  };
+  try {
+    const response: AxiosResponse<
+      string | { message: string; filesNotDeleted: string[] }
+    > = await axios.delete(`http://localhost:8081/api/deleteTempFiles`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data,
+    });
+
+    return response;
+  } catch (error) {
+    return null;
+  }
+};

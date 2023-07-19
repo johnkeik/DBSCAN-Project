@@ -1,6 +1,6 @@
 import { applyDBSCAN } from "@/api/datasets";
-import { Button, Form, FormInstance, Input } from "antd";
-import { useRef, useState } from "react";
+import { Button, Form, FormInstance, Input, Spin } from "antd";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import DatasetTableCompoent from "./DatasetTableComponent";
 
 const INT_REGEX = /^(?:1000|[1-9]\d{0,2})$/;
@@ -8,14 +8,21 @@ const INT_REGEX = /^(?:1000|[1-9]\d{0,2})$/;
 const DBSCANCard = ({
   dataset_name,
   columns,
+  setTempFileNames,
 }: {
   dataset_name: string;
   columns: string[];
+  setTempFileNames: Dispatch<SetStateAction<string[]>>;
 }) => {
   const formRef = useRef<FormInstance>(null);
   const [loading, setLoading] = useState(false);
   const [generateDatasetName, setGeneratedDatasetName] = useState("");
-  const [datasetHeaders, setDatasetHeaders] = useState<string[]>([]);
+  const [epsilon, setEpsilon] = useState<number>();
+  const [minSamples, setMinSamples] = useState<number>();
+
+  useEffect(() => {
+    setGeneratedDatasetName("");
+  }, [dataset_name]);
 
   const handleSubmit = async (values: {
     epsilon: number;
@@ -30,7 +37,14 @@ const DBSCANCard = ({
     });
     setLoading(false);
     if (response) {
+      setEpsilon(values.epsilon);
+      setMinSamples(values.min_samples);
       setGeneratedDatasetName(response.generatedDatasetFileName);
+      setTempFileNames((prevArray) => [
+        ...prevArray,
+        response.generatedDatasetFileName,
+      ]);
+      formRef.current?.resetFields();
     } else {
       console.log("something went wrong");
     }
@@ -86,24 +100,36 @@ const DBSCANCard = ({
         </Button>
       </Form>
 
-      {generateDatasetName && (
+      {loading ? (
+        <Spin />
+      ) : (
         <>
-          <div className="flex flex-row justify-between items-end py-2">
-            <h1>Generated dataset preview:</h1>
-            <div className="flex flex-row gap-2">
-              <button className=" rounded-lg bg-blue-500 p-2 text-white hover:bg-blue-800">
-                Download
-              </button>
-              <button className=" rounded-lg bg-green-700 p-2 text-white hover:bg-green-900">
-                Generate Plot
-              </button>
-            </div>
-          </div>
-          <DatasetTableCompoent
-            filename={generateDatasetName}
-            setDatasetHeaders={setDatasetHeaders}
-            isTempDataset={true}
-          />
+          {generateDatasetName && (
+            <>
+              <div className="flex flex-row justify-between items-end py-2">
+                <div className="flex flex-col">
+                  <div className="flex flex-row gap-2 ">
+                    <h1>Epsilon: {epsilon}</h1>
+                    <h1>Min Samples: {minSamples}</h1>
+                  </div>
+                  <h1>Generated dataset preview:</h1>
+                </div>
+                <div className="flex flex-row gap-2">
+                  <button className=" rounded-lg bg-blue-500 p-2 text-white hover:bg-blue-800">
+                    Download
+                  </button>
+                  <button className=" rounded-lg bg-green-700 p-2 text-white hover:bg-green-900">
+                    Generate Plot
+                  </button>
+                </div>
+              </div>
+
+              <DatasetTableCompoent
+                filename={generateDatasetName}
+                isTempDataset={true}
+              />
+            </>
+          )}
         </>
       )}
     </div>

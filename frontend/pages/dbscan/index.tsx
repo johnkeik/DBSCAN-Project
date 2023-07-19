@@ -4,6 +4,8 @@ import CalculateEpsilonCard from "./components/CalculateEpsilonCard";
 import DatasetHeadersCard from "./components/DatasetHeadersCard";
 import DBSCANCard from "./components/DBSCANCard";
 import DatasetsList from "./components/DatasetsList";
+import { clearTempFiles } from "@/api/datasets";
+import { useRouter } from "next/router";
 
 const DBSCAN = () => {
   const [selectedDataset, setSelectedDataset] = useState<{
@@ -21,10 +23,18 @@ const DBSCAN = () => {
       disabled: boolean;
     }[]
   >([]);
+  const [tempFileNames, setTempFileNames] = useState<string[]>([]);
 
   useEffect(() => {
     setDatasetHeaders([]);
     setNumericalDatasetHeaders([]);
+
+    (async () => {
+      if (tempFileNames.length > 0)
+        await clearTempFiles({ tempFileNames }).then(() => {
+          setTempFileNames([]);
+        });
+    })();
   }, [selectedDataset]);
 
   useEffect(() => {
@@ -55,6 +65,26 @@ const DBSCAN = () => {
     return temp.filter((value): value is string => value !== null);
   }, [headers]);
 
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleRouteChange = async () => {
+      if (tempFileNames.length > 0) {
+        await clearTempFiles({ tempFileNames });
+      }
+    };
+
+    router.events.on("routeChangeStart", handleRouteChange);
+
+    return () => {
+      router.events.off("routeChangeStart", handleRouteChange);
+    };
+  }, [router.events, tempFileNames]);
+
+  window.onbeforeunload = async function (e) {
+    if (tempFileNames.length > 0) await clearTempFiles({ tempFileNames });
+  };
+
   return (
     <div className="flex flex-col items-center justify-center pb-[150px]">
       <h1 className=" text-6xl pb-10">DBSCAN Appliance</h1>
@@ -79,6 +109,7 @@ const DBSCAN = () => {
           <DBSCANCard
             dataset_name={selectedDataset.name}
             columns={numericalColumnNames}
+            setTempFileNames={setTempFileNames}
           />
         </div>
       )}

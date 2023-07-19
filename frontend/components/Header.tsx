@@ -1,8 +1,10 @@
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const HeaderComponent = () => {
   const { openSigningModal, user, logout } = useAuth();
+  const router = useRouter();
   return (
     <div className=" fixed z-50 w-full h-auto py-5 px-28 bg-white border-b-[1px] border-black flex flex-row justify-between items-center gap-10">
       <h1 className="font-extrabold text-transparent text-3xl bg-clip-text bg-gradient-to-r from-blue-600 to-violet-400">
@@ -23,8 +25,10 @@ const HeaderComponent = () => {
         <li>
           <h1
             onClick={() => {
-              if (user) logout();
-              else openSigningModal();
+              if (user) {
+                logout();
+                router.push("/");
+              } else openSigningModal();
             }}
             className=" cursor-pointer"
           >

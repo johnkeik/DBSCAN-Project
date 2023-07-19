@@ -76,6 +76,57 @@ export const fetchDataset: RequestHandler = (req, res) => {
     });
 };
 
+export const deleteTempFiles: RequestHandler = (req, res) => {
+  const tempFileNames = req.body.tempFileNames as string[];
+
+  if (tempFileNames && tempFileNames.length > 0) {
+    const deletePromises = tempFileNames.map((fileName) => {
+      const tempImageFilePath = path.join(tempFolder, fileName);
+      return new Promise<void | string>((resolve) => {
+        fs.unlink(tempImageFilePath, (err) => {
+          if (err) {
+            console.error("Error deleting file:", err);
+            resolve(fileName); // Resolve with fileName when deletion fails
+          } else {
+            resolve(); // Resolve without any value when deletion succeeds
+          }
+        });
+      });
+    });
+
+    Promise.all(deletePromises)
+      .then((deletedFiles) => {
+        const filesNotDeleted = deletedFiles.filter((fileName) => fileName); // Filter out resolved promises (successful deletions)
+        if (filesNotDeleted.length === 0) {
+          console.log("All files deleted successfully");
+          return res.status(200).send({
+            message: "Successfully deleted all files",
+            filesNotDeleted: filesNotDeleted,
+          });
+        } else {
+          console.log(
+            "Files not deleted:",
+            filesNotDeleted.length,
+            filesNotDeleted
+          );
+          return res.status(500).send({
+            message: "Could not delete all files",
+            filesNotDeleted: filesNotDeleted,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error deleting files:", error);
+        return res.status(500).send({
+          message: "Could not delete files",
+          filesNotDeleted: tempFileNames,
+        });
+      });
+  } else {
+    return res.status(500).send("Could not process request");
+  }
+};
+
 export const findEpsilonAsGuest: RequestHandler = (req, res) => {
   const tempImageFilename = `temp_${Date.now()}-${Math.random()}.png`;
   const dataset_name = req.query.dataset_name as string;
