@@ -14,8 +14,6 @@ const CalculateEpsilonCard = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const formRef = useRef<FormInstance>(null);
-  const [epsilon, setEpsilon] = useState("");
-  const [plotImage, setPlotImage] = useState<string[]>([]);
   const [responses, setResponses] = useState<
     { epsilon: string; plotImage: string }[]
   >([]);
