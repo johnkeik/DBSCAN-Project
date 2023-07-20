@@ -1,6 +1,8 @@
 import express, { RequestHandler } from "express";
 import userRoutes from "./routes/userRouter";
 import datasetRoutes from "./routes/datasetsRouter";
+import dbscanRoutes from "./routes/dbscanRouter";
+import fileRoutes from "./routes/filesRouter";
 import connection from "./db/config";
 import { json, urlencoded } from "body-parser";
 import "dotenv/config";
@@ -17,7 +19,7 @@ app.use(fileUpload());
 app.get("/", (req, res) => {
   res.status(200).send("Server is running...");
 });
-app.use("/api", [userRoutes, datasetRoutes]);
+app.use("/api", [userRoutes, datasetRoutes, dbscanRoutes, fileRoutes]);
 
 app.use(
   (
