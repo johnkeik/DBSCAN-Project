@@ -1,5 +1,3 @@
-# generate_parallel_plot.py
-
 import pandas as pd
 import matplotlib.pyplot as plt
 from pandas.plotting import parallel_coordinates
@@ -11,8 +9,6 @@ columns = sys.argv[3].split(',')
 
 dataset = pd.read_csv(dataSetFilePath)
 
-# Create a parallel plot for the specified columns and clusters
-# plt.figure(figsize=(10, 6))
 parallel_coordinates(dataset, 'cluster', cols=columns, colormap='tab10', linewidth=2)
 
 fig = plt.gcf()
@@ -25,4 +21,3 @@ if(len(columns)>30):
 
 
 plt.savefig(outputFilePath)
-plt.show()

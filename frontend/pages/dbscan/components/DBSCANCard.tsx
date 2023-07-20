@@ -1,8 +1,10 @@
-import { applyDBSCAN, downloadDataset } from "@/api/datasets";
-import { Button, Form, FormInstance, Input, Spin } from "antd";
+import { downloadDataset } from "@/api/datasets";
+import { Button, Form, FormInstance, Input, Modal, Spin, Image } from "antd";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import DatasetTableCompoent from "./DatasetTableComponent";
 import { DatasetType } from "@/types";
+import { applyDBSCAN, fetchParallelPlot } from "@/api/dbscan";
+import { downloadPlotImage } from "@/api/files";
 
 const INT_REGEX = /^(?:1000|[1-9]\d{0,2})$/;
 
@@ -20,15 +22,20 @@ const DBSCANCard = ({
   const [generateDatasetName, setGeneratedDatasetName] = useState("");
   const [epsilon, setEpsilon] = useState<number>();
   const [minSamples, setMinSamples] = useState<number>();
+  const [showPlotModal, setShowPlotModal] = useState(false);
+  const [generatedPlotImage, setGeneratedPlotImage] = useState("");
+  const [plotLoading, setPlotLoading] = useState(false);
 
   useEffect(() => {
     setGeneratedDatasetName("");
+    setGeneratedPlotImage("");
   }, [dataset]);
 
   const handleSubmit = async (values: {
     epsilon: number;
     min_samples: number;
   }) => {
+    setGeneratedPlotImage("");
     setLoading(true);
     const response = await applyDBSCAN({
       dataset_name: dataset.name,
@@ -50,8 +57,30 @@ const DBSCANCard = ({
       console.log("something went wrong");
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      if (showPlotModal && generatedPlotImage === "") {
+        setPlotLoading(true);
+        await fetchParallelPlot({
+          dataset_name: generateDatasetName,
+          columns,
+        }).then((response) => {
+          if (response) {
+            setGeneratedPlotImage(response.generatedPlotName);
+            setTempFileNames((prevArray) => [
+              ...prevArray,
+              response.generatedPlotName,
+            ]);
+          }
+        });
+        setPlotLoading(false);
+      }
+    })();
+  }, [showPlotModal]);
+
   return (
-    <div className="w-[900px] flex flex-col min-w-[100px] border-2 rounded-lg p-5 shadow-xl mt-10">
+    <div className="max-w-[900px] flex flex-col min-w-[100px] border-2 rounded-lg p-5 shadow-xl mt-10">
       <h1 className="pb-2">DBSCAN</h1>
 
       <Form
@@ -127,7 +156,12 @@ const DBSCANCard = ({
                   >
                     Download
                   </button>
-                  <button className=" rounded-lg bg-green-700 p-2 text-white hover:bg-green-900">
+                  <button
+                    className=" rounded-lg bg-green-700 p-2 text-white hover:bg-green-900"
+                    onClick={() => {
+                      setShowPlotModal(true);
+                    }}
+                  >
                     Generate Plot
                   </button>
                 </div>
@@ -141,6 +175,49 @@ const DBSCANCard = ({
           )}
         </>
       )}
+      <Modal
+        open={showPlotModal}
+        title="Parallel Plot"
+        onCancel={() => {
+          setShowPlotModal(false);
+        }}
+        width={800}
+        footer={[
+          <Button
+            key="back"
+            onClick={() => {
+              setShowPlotModal(false);
+            }}
+          >
+            Close
+          </Button>,
+          <Button
+            key="download"
+            onClick={async () => {
+              await downloadPlotImage({ fileName: generatedPlotImage });
+            }}
+          >
+            Download
+          </Button>,
+        ]}
+      >
+        {plotLoading ? (
+          <div className="flex flex-row gap-5">
+            <h1>Generating plot image</h1>
+            <Spin />
+          </div>
+        ) : (
+          <>
+            {generatedPlotImage && (
+              <Image
+                src={`http://localhost:8081/api/fetchPlotImage?filename=${generatedPlotImage}`}
+                alt="img"
+                width={700}
+              />
+            )}
+          </>
+        )}
+      </Modal>
     </div>
   );
 };

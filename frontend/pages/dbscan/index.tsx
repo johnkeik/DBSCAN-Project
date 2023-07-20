@@ -4,7 +4,7 @@ import CalculateEpsilonCard from "./components/CalculateEpsilonCard";
 import DatasetHeadersCard from "./components/DatasetHeadersCard";
 import DBSCANCard from "./components/DBSCANCard";
 import DatasetsList from "./components/DatasetsList";
-import { clearTempFiles } from "@/api/datasets";
+import { clearTempFiles } from "@/api/files";
 import { useRouter } from "next/router";
 import { DatasetType } from "@/types";
 
@@ -114,6 +114,7 @@ const DBSCAN = () => {
           <CalculateEpsilonCard
             dataset_name={selectedDataset.name}
             columns={numericalColumnNames}
+            setTempFileNames={setTempFileNames}
           />
           <DBSCANCard
             dataset={selectedDataset}

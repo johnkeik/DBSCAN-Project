@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import fs from "fs";
+import fs, { createReadStream } from "fs";
 import path from "path";
 
 const tempFolder = path.join(__dirname, "..", "..", "/datasets/temp");
@@ -63,16 +63,29 @@ export const fetchPlotImage: RequestHandler = (req, res) => {
       if (err) {
         console.error("Error sending file:", err);
         res.status(500).send("Error sending file");
-      } else {
-        // Deleting the image file
-        fs.unlink(tempImageFilePath, (err) => {
-          if (err) {
-            console.error("Error deleting file:", err);
-          }
-        });
       }
+      //  else {
+      //   // Deleting the image file
+      //   fs.unlink(tempImageFilePath, (err) => {
+      //     if (err) {
+      //       console.error("Error deleting file:", err);
+      //     }
+      //   });
+      // }
     });
   } else {
     res.status(500).send("No such file or directory");
   }
+};
+
+export const downloadPlotImage: RequestHandler = (req, res) => {
+  const filename = req.query.filename as string;
+
+  const filePath = path.join(tempFolder, filename);
+
+  res.setHeader("Content-Type", "image/png");
+  res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
+
+  const fileStream = createReadStream(filePath);
+  fileStream.pipe(res);
 };

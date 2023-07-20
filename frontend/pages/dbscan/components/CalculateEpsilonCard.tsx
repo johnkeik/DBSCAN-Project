@@ -1,16 +1,17 @@
-import { fetchOptimalEpsilon } from "@/api/datasets";
-import { Button, Form, FormInstance, Input, Spin } from "antd";
-import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { fetchOptimalEpsilon } from "@/api/dbscan";
+import { Button, Form, FormInstance, Input, Spin, Image } from "antd";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 
 const K_REGEX = /^(?:1000|[1-9]\d{0,2})$/;
 
 const CalculateEpsilonCard = ({
   dataset_name,
   columns,
+  setTempFileNames,
 }: {
   dataset_name: string;
   columns: string[];
+  setTempFileNames: Dispatch<SetStateAction<string[]>>;
 }) => {
   const [loading, setLoading] = useState(false);
   const formRef = useRef<FormInstance>(null);
@@ -35,6 +36,7 @@ const CalculateEpsilonCard = ({
         .then((response) => {
           if (response) {
             setResponses((prevArray) => [...prevArray, response]);
+            setTempFileNames((prevArray) => [...prevArray, response.plotImage]);
           }
         })
         .catch(() => {
@@ -95,13 +97,11 @@ const CalculateEpsilonCard = ({
                 key={response.plotImage}
               >
                 {response.plotImage && (
-                  <div className=" relative w-full aspect-[16/12] ">
-                    <Image
-                      src={`http://localhost:8081/api/fetchPlotImage?filename=${response.plotImage}`}
-                      alt="img"
-                      fill
-                    />
-                  </div>
+                  <Image
+                    src={`http://localhost:8081/api/fetchPlotImage?filename=${response.plotImage}`}
+                    alt="img"
+                    width={450}
+                  />
                 )}
                 {response.epsilon && (
                   <h1>Suggested epsilon {response.epsilon}</h1>
