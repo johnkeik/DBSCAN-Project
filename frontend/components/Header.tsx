@@ -30,6 +30,14 @@ const HeaderComponent = () => {
             {user ? "Logout" : "Login"}
           </h1>
         </li>
+        <li>
+          <a
+            href="https://docs.google.com/forms/d/e/1FAIpQLSfamx75X9wKlqzfjEXv0l4LmmAAi_xZeAx6xWhqt9CGyU5uww/viewform?usp=sf_link"
+            target="_blank"
+          >
+            Rate Us!
+          </a>
+        </li>
       </ul>
     </div>
   );
