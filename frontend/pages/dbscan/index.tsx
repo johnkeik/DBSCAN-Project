@@ -81,9 +81,18 @@ const DBSCAN = () => {
     };
   }, [router.events, tempFileNames]);
 
-  window.onbeforeunload = async function (e) {
-    if (tempFileNames.length > 0) await clearTempFiles({ tempFileNames });
-  };
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.onbeforeunload = async function (e) {
+        if (tempFileNames.length > 0) await clearTempFiles({ tempFileNames });
+      };
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.onbeforeunload = null;
+      }
+    };
+  });
 
   return (
     <div className="flex flex-col items-center justify-center pb-[150px]">
