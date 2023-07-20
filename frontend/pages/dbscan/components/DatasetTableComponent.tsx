@@ -2,7 +2,10 @@ import { Select, Spin } from "antd";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import { fetchDataset } from "@/api/datasets";
+import { fetchPrivateDataset, fetchPublicDataset } from "@/api/datasets";
+import { DatasetType } from "@/types";
+import { useAuth } from "@/context/AuthContext";
+import Cookies from "js-cookie";
 
 interface DatasetResponse {
   header: string[];
@@ -12,12 +15,12 @@ interface DatasetResponse {
 }
 
 const DatasetTableCompoent = ({
-  filename,
+  dataset,
   setDatasetHeaders,
   setNumericalDatasetHeaders,
   isTempDataset,
 }: {
-  filename: string;
+  dataset: DatasetType;
   setDatasetHeaders?: Dispatch<SetStateAction<string[]>>;
   setNumericalDatasetHeaders?: Dispatch<SetStateAction<string[]>>;
   isTempDataset?: boolean;
@@ -33,29 +36,48 @@ const DatasetTableCompoent = ({
   });
   const [pageSize, setPageSize] = useState(15);
   const pageSizes = [15, 30, 50, 100];
+  const { user } = useAuth();
 
   useEffect(() => {
     (async () => {
       setLoading(true);
-      await fetchDataset({
-        filename,
-        chunkIndex: currentChunkIndex.index,
-        pageSize,
-        isTempDataset,
-      }).then((response) => {
-        if (response) {
-          setData(response);
-          setDatasetHeaders && setDatasetHeaders(response.header);
-          setNumericalDatasetHeaders &&
-            setNumericalDatasetHeaders(response.numericalHeaders);
-        } else {
-          console.log("no data");
-        }
-      });
+      if (dataset.type === "private") {
+        await fetchPrivateDataset({
+          filename: dataset.name,
+          chunkIndex: currentChunkIndex.index,
+          pageSize,
+          token: Cookies.get("accessToken") ?? "",
+        }).then((response) => {
+          if (response) {
+            setData(response);
+            setDatasetHeaders && setDatasetHeaders(response.header);
+            setNumericalDatasetHeaders &&
+              setNumericalDatasetHeaders(response.numericalHeaders);
+          } else {
+            console.log("no data");
+          }
+        });
+      } else {
+        await fetchPublicDataset({
+          filename: dataset.name,
+          chunkIndex: currentChunkIndex.index,
+          pageSize,
+          isTempDataset: dataset.type === "temp",
+        }).then((response) => {
+          if (response) {
+            setData(response);
+            setDatasetHeaders && setDatasetHeaders(response.header);
+            setNumericalDatasetHeaders &&
+              setNumericalDatasetHeaders(response.numericalHeaders);
+          } else {
+            console.log("no data");
+          }
+        });
+      }
       setLoading(false);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentChunkIndex, filename]);
+  }, [currentChunkIndex, dataset]);
 
   const chunkSize = 3; // Number of chunks per page
   const [pageNumbers, setPageNumbers] = useState<number[]>([]);

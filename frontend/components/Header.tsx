@@ -17,11 +17,6 @@ const HeaderComponent = () => {
         <li>
           <Link href={"/dbscan"}>DBSCAN</Link>
         </li>
-        {user && (
-          <li>
-            <Link href={"/profile"}>Profile</Link>
-          </li>
-        )}
         <li>
           <h1
             onClick={() => {

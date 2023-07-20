@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { UniqueConstraintError } from "sequelize";
 import "dotenv/config";
 import jwt from "jsonwebtoken";
+import { generateApiKey } from "../utils";
 
 export const loginUser: RequestHandler = async (req, res) => {
   const user = await User.findOne({ where: { email: req.body.email } });
@@ -33,6 +34,8 @@ export const register: RequestHandler = async (req, res) => {
       name: req.body.name,
       email: req.body.email,
       password: result,
+      apiKey: generateApiKey(),
+      publicAccess: 0,
     })
       .then((user) => {
         const token = jwt.sign(

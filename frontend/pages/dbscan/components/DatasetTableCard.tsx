@@ -1,19 +1,20 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import DatasetTableCompoent from "./DatasetTableComponent";
+import { DatasetType } from "@/types";
 
 const DatasetTableCard = ({
-  filename,
+  dataset,
   setDatasetHeaders,
   setNumericalDatasetHeaders,
 }: {
-  filename: string;
+  dataset: DatasetType;
   setDatasetHeaders: Dispatch<SetStateAction<string[]>>;
   setNumericalDatasetHeaders: Dispatch<SetStateAction<string[]>>;
 }) => {
   return (
     <div className="w-[900px] min-w-[100px] mt-10">
       <DatasetTableCompoent
-        filename={filename}
+        dataset={dataset}
         setDatasetHeaders={setDatasetHeaders}
         setNumericalDatasetHeaders={setNumericalDatasetHeaders}
       />

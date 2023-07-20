@@ -20,7 +20,25 @@ export const fetchPublicDatasets = async (): Promise<string[] | null> => {
   }
 };
 
-export const fetchDataset = async ({
+export const fetchPrivateDatasets = async (
+  token: string
+): Promise<string[] | null> => {
+  try {
+    const response: AxiosResponse<string[]> = await axios.get(
+      "http://localhost:8081/api/fetchPrivateDatasets",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    return null;
+  }
+};
+
+export const fetchPublicDataset = async ({
   filename,
   chunkIndex,
   pageSize,
@@ -33,11 +51,65 @@ export const fetchDataset = async ({
 }) => {
   try {
     const response: AxiosResponse<DatasetResponse> = await axios.get(
-      `http://localhost:8081/api/fetchDataset?filename=${filename}${
+      `http://localhost:8081/api/fetchPublicDataset?filename=${filename}${
         chunkIndex !== undefined ? `&chunkIndex=${chunkIndex}` : ""
       }${pageSize !== undefined ? `&pageSize=${pageSize}` : ""}${
         isTempDataset ? "&isTempDataset=true" : ""
       }&timestamp=${Date.now()}`
+    );
+    return response.data;
+  } catch (error: any) {
+    return null;
+  }
+};
+
+export const fetchPrivateDataset = async ({
+  filename,
+  chunkIndex,
+  pageSize,
+  token,
+}: {
+  filename: string;
+  chunkIndex?: number;
+  pageSize?: number;
+  token: string;
+}) => {
+  try {
+    const response: AxiosResponse<DatasetResponse> = await axios.get(
+      `http://localhost:8081/api/fetchPrivateDataset?filename=${filename}${
+        chunkIndex !== undefined ? `&chunkIndex=${chunkIndex}` : ""
+      }${
+        pageSize !== undefined ? `&pageSize=${pageSize}` : ""
+      }&timestamp=${Date.now()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    return null;
+  }
+};
+
+export const deleteDataset = async ({
+  token,
+  filename,
+  fileType,
+}: {
+  token: string;
+  filename: string;
+  fileType: string;
+}) => {
+  try {
+    const response: AxiosResponse<DatasetResponse> = await axios.delete(
+      `http://localhost:8081/api/deleteDataset?filename=${filename}&fileType=${fileType}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
     return response.data;
   } catch (error: any) {
@@ -119,5 +191,62 @@ export const clearTempFiles = async ({
     return response;
   } catch (error) {
     return null;
+  }
+};
+
+export const downloadDataset = async ({
+  fileName,
+  isTempDataset,
+}: {
+  fileName: string;
+  isTempDataset?: boolean;
+}) => {
+  try {
+    const response = await axios.get(
+      `http://localhost:8081/api/downloadDataset?filename=${fileName}${
+        isTempDataset ? "&isTempDataset=true" : ""
+      }`,
+      {
+        responseType: "blob", // Set the response type to blob
+      }
+    );
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", fileName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    console.error("Error downloading dataset:", error);
+  }
+};
+
+export const uploadDataset = async ({
+  file,
+  token,
+  uploadPublic,
+}: {
+  file: any;
+  token: string;
+  uploadPublic: boolean;
+}) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await axios.post(
+      `http://localhost:8081/api/uploadDataset?isPublic=${uploadPublic}`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to upload file");
   }
 };

@@ -1,16 +1,17 @@
-import { applyDBSCAN } from "@/api/datasets";
+import { applyDBSCAN, downloadDataset } from "@/api/datasets";
 import { Button, Form, FormInstance, Input, Spin } from "antd";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import DatasetTableCompoent from "./DatasetTableComponent";
+import { DatasetType } from "@/types";
 
 const INT_REGEX = /^(?:1000|[1-9]\d{0,2})$/;
 
 const DBSCANCard = ({
-  dataset_name,
+  dataset,
   columns,
   setTempFileNames,
 }: {
-  dataset_name: string;
+  dataset: DatasetType;
   columns: string[];
   setTempFileNames: Dispatch<SetStateAction<string[]>>;
 }) => {
@@ -22,7 +23,7 @@ const DBSCANCard = ({
 
   useEffect(() => {
     setGeneratedDatasetName("");
-  }, [dataset_name]);
+  }, [dataset]);
 
   const handleSubmit = async (values: {
     epsilon: number;
@@ -30,7 +31,7 @@ const DBSCANCard = ({
   }) => {
     setLoading(true);
     const response = await applyDBSCAN({
-      dataset_name,
+      dataset_name: dataset.name,
       epsilon: values.epsilon,
       min_samples: values.min_samples,
       columns,
@@ -115,7 +116,15 @@ const DBSCANCard = ({
                   <h1>Generated dataset preview:</h1>
                 </div>
                 <div className="flex flex-row gap-2">
-                  <button className=" rounded-lg bg-blue-500 p-2 text-white hover:bg-blue-800">
+                  <button
+                    className=" rounded-lg bg-blue-500 p-2 text-white hover:bg-blue-800"
+                    onClick={async () => {
+                      await downloadDataset({
+                        fileName: generateDatasetName,
+                        isTempDataset: true,
+                      });
+                    }}
+                  >
                     Download
                   </button>
                   <button className=" rounded-lg bg-green-700 p-2 text-white hover:bg-green-900">
@@ -125,7 +134,7 @@ const DBSCANCard = ({
               </div>
 
               <DatasetTableCompoent
-                filename={generateDatasetName}
+                dataset={{ name: generateDatasetName, type: "temp" }}
                 isTempDataset={true}
               />
             </>

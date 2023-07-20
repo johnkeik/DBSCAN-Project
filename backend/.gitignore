@@ -7,5 +7,6 @@ node_modules/*
 .env
 
 datasets/temp/*
+datasets/private/*
 
 dist/*

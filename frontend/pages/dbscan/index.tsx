@@ -6,12 +6,12 @@ import DBSCANCard from "./components/DBSCANCard";
 import DatasetsList from "./components/DatasetsList";
 import { clearTempFiles } from "@/api/datasets";
 import { useRouter } from "next/router";
+import { DatasetType } from "@/types";
 
 const DBSCAN = () => {
-  const [selectedDataset, setSelectedDataset] = useState<{
-    name: string;
-    public: boolean;
-  } | null>(null);
+  const [selectedDataset, setSelectedDataset] = useState<DatasetType | null>(
+    null
+  );
   const [datasetHeaders, setDatasetHeaders] = useState<string[]>([]);
   const [numericalDatasetHeaders, setNumericalDatasetHeaders] = useState<
     string[]
@@ -95,7 +95,7 @@ const DBSCAN = () => {
       {selectedDataset && (
         <div className="flex flex-col items-center">
           <DatasetTableCard
-            filename={selectedDataset.name}
+            dataset={selectedDataset}
             setDatasetHeaders={setDatasetHeaders}
             setNumericalDatasetHeaders={setNumericalDatasetHeaders}
           />
@@ -107,7 +107,7 @@ const DBSCAN = () => {
             columns={numericalColumnNames}
           />
           <DBSCANCard
-            dataset_name={selectedDataset.name}
+            dataset={selectedDataset}
             columns={numericalColumnNames}
             setTempFileNames={setTempFileNames}
           />

@@ -6,12 +6,13 @@ import { json, urlencoded } from "body-parser";
 import "dotenv/config";
 import cors from "cors";
 import https from "https";
+import fileUpload from "express-fileupload";
 
 const app = express();
 app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(cors());
-
+app.use(fileUpload());
 //apis
 app.get("/", (req, res) => {
   res.status(200).send("Server is running...");

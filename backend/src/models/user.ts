@@ -23,4 +23,16 @@ export class User extends Model {
     allowNull: false,
   })
   password!: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  apiKey!: string;
+
+  @Column({
+    type: DataType.NUMBER,
+    allowNull: false,
+  })
+  publicAccess!: number;
 }
