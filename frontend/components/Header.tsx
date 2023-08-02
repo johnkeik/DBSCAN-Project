@@ -11,14 +11,14 @@ const HeaderComponent = () => {
         DBSCAN Web App
       </h1>
       <ul className="gap-3 flex flex-row text-white font-bold text-2xl">
-        <li>
+        <li className="text-white font-bold text-2xl hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-lime-400 hover:to-yellow-500">
           <Link href={"/"}>Home</Link>
         </li>
-        <li>
+        <li className="text-white font-bold text-2xl hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-lime-400 hover:to-yellow-500">
           <Link href={"/dbscan"}>DBSCAN</Link>
         </li>
 
-        <li>
+        <li className="text-white font-bold text-2xl hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-lime-400 hover:to-yellow-500">
           <a
             href="https://docs.google.com/forms/d/e/1FAIpQLSfamx75X9wKlqzfjEXv0l4LmmAAi_xZeAx6xWhqt9CGyU5uww/viewform?usp=sf_link"
             target="_blank"
@@ -26,10 +26,10 @@ const HeaderComponent = () => {
             Rate Us!
           </a>
         </li>
-        <li>
+        <li className="text-white font-bold text-2xl hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-lime-400 hover:to-yellow-500">
           <Link href={"/docs"}>Api-Docs</Link>
         </li>
-        <li>
+        <li className="text-white font-bold text-2xl hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-lime-400 hover:to-yellow-500">
           <h1
             onClick={() => {
               if (user) {
