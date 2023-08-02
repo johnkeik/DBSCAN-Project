@@ -4,6 +4,43 @@ import path from "path";
 
 const tempFolder = path.join(__dirname, "..", "..", "/datasets/temp");
 
+/**
+ * @openapi
+ * /api/deleteTempFiles:
+ *   delete:
+ *     tags:
+ *       - Files Manipulation
+ *     summary: Delete Temporary Files
+ *     description: This endpoint deletes temporary files.
+ *     requestBody:
+ *       description: JSON object containing array of temporary filenames to be deleted
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               tempFileNames:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *     responses:
+ *       200:
+ *         description: Successfully deleted all files.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 filesNotDeleted:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       500:
+ *         description: An error occurred during file deletion.
+ */
 export const deleteTempFiles: RequestHandler = (req, res) => {
   const tempFileNames = req.body.tempFileNames as string[];
 
@@ -55,6 +92,27 @@ export const deleteTempFiles: RequestHandler = (req, res) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/fetchPlotImage:
+ *   get:
+ *     tags:
+ *       - Files Manipulation
+ *     summary: Fetch Plot Image
+ *     description: This endpoint sends a plot image file.
+ *     parameters:
+ *       - in: query
+ *         name: filename
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Name of the image file.
+ *     responses:
+ *       200:
+ *         description: Image file.
+ *       500:
+ *         description: An error occurred sending file or file does not exist.
+ */
 export const fetchPlotImage: RequestHandler = (req, res) => {
   const filename = req.query.filename as string;
   const tempImageFilePath = path.join(tempFolder, filename);
@@ -77,6 +135,28 @@ export const fetchPlotImage: RequestHandler = (req, res) => {
     res.status(500).send("No such file or directory");
   }
 };
+
+/**
+ * @openapi
+ * /api/downloadPlotImage:
+ *   get:
+ *     tags:
+ *       - Files Manipulation
+ *     summary: Download Plot Image
+ *     description: This endpoint downloads a plot image file.
+ *     parameters:
+ *       - in: query
+ *         name: filename
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Name of the image file.
+ *     responses:
+ *       200:
+ *         description: Image file for download.
+ *       500:
+ *         description: An error occurred during file download.
+ */
 
 export const downloadPlotImage: RequestHandler = (req, res) => {
   const filename = req.query.filename as string;

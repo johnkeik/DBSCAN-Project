@@ -6,6 +6,54 @@ import "dotenv/config";
 import jwt from "jsonwebtoken";
 import { generateApiKey } from "../utils";
 
+/**
+ * @openapi
+ * /api/login:
+ *   post:
+ *     tags:
+ *       - Authentication
+ *     summary: Login User
+ *     description: This endpoint logs in a user.
+ *     requestBody:
+ *       description: User credentials
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successfully logged in with user details and accessToken.
+ *         content:
+ *           application/json:
+ *            schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                       description: The user's name.
+ *                     email:
+ *                       type: string
+ *                       description: The user's email. This is the primary key.
+ *                     apiKey:
+ *                       type: string
+ *                       description: The user's API key.
+ *                     publicAccess:
+ *                       type: integer
+ *                       description: A number indicating the user's level of public access.
+ *                 accessToken:
+ *                   type: string
+ *       401:
+ *         description: Invalid credentials.
+ */
 export const loginUser: RequestHandler = async (req, res) => {
   const user = await User.findOne({ where: { email: req.body.email } });
   if (user) {
@@ -28,6 +76,58 @@ export const loginUser: RequestHandler = async (req, res) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/register:
+ *   post:
+ *     tags:
+ *       - Authentication
+ *     summary: Register User
+ *     description: This endpoint registers a new user.
+ *     requestBody:
+ *       description: User details for registration
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successfully registered with user details and accessToken.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                       description: The user's name.
+ *                     email:
+ *                       type: string
+ *                       description: The user's email. This is the primary key.
+ *                     apiKey:
+ *                       type: string
+ *                       description: The user's API key.
+ *                     publicAccess:
+ *                       type: integer
+ *                       description: A number indicating the user's level of public access.
+ *                 accessToken:
+ *                   type: string
+ *       400:
+ *         description: Something went wrong or Email already exists.
+ */
 export const register: RequestHandler = async (req, res) => {
   bcrypt.hash(req.body.password, 10).then(async (result) => {
     await User.create({
@@ -63,6 +163,40 @@ export const register: RequestHandler = async (req, res) => {
   });
 };
 
+/**
+ * @openapi
+ * /api/userInfo:
+ *   get:
+ *     tags:
+ *       - Authentication
+ *     summary: Fetch User Information
+ *     description: This endpoint fetches user information.
+ *     responses:
+ *       200:
+ *         description: Successfully fetched user details.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                       description: The user's name.
+ *                     email:
+ *                       type: string
+ *                       description: The user's email. This is the primary key.
+ *                     apiKey:
+ *                       type: string
+ *                       description: The user's API key.
+ *                     publicAccess:
+ *                       type: integer
+ *                       description: A number indicating the user's level of public access.
+ *       400:
+ *         description: Could not find user.
+ */
 export const fetchUserInfo: RequestHandler = async (req, res) => {
   if (req.body.decoded && req.body.decoded.email) {
     const user = await User.findByPk(req.body.decoded.email);
@@ -74,9 +208,4 @@ export const fetchUserInfo: RequestHandler = async (req, res) => {
   } else {
     return res.status(400).send("Could not find user");
   }
-};
-export const getAllUsers: RequestHandler = async (req, res) => {
-  let users = await User.findAll({});
-
-  res.status(200).send(users);
 };

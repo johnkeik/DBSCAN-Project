@@ -95,34 +95,39 @@ const DBSCAN = () => {
   });
 
   return (
-    <div className="flex flex-col items-center pt-[200px] min-h-screen bg-fixed bg-center bg-cover custom-background-img relative pb-[150px]">
-      <h1 className=" text-6xl pb-10 text-white">DBSCAN Appliance</h1>
-      <DatasetsList
-        selectedDataset={selectedDataset}
-        setSelectedDataset={setSelectedDataset}
-      />
-      {selectedDataset && (
+    <div className="flex flex-col items-center min-h-screen bg-fixed bg-center bg-cover custom-background-img relative">
+      <div className="flex-col items-center justify-center overflow-auto mt-[77px] w-full max-h-[calc(100vh-77px)] pb-[150px] pt-[123px]">
         <div className="flex flex-col items-center">
-          <DatasetTableCard
-            dataset={selectedDataset}
-            setDatasetHeaders={setDatasetHeaders}
-            setNumericalDatasetHeaders={setNumericalDatasetHeaders}
-          />
-          {datasetHeaders && (
-            <DatasetHeadersCard headers={headers} setHeaders={setHeaders} />
-          )}
-          <CalculateEpsilonCard
-            dataset_name={selectedDataset.name}
-            columns={numericalColumnNames}
-            setTempFileNames={setTempFileNames}
-          />
-          <DBSCANCard
-            dataset={selectedDataset}
-            columns={numericalColumnNames}
-            setTempFileNames={setTempFileNames}
+          <h1 className=" text-6xl pb-10 text-white">DBSCAN Appliance</h1>
+
+          <DatasetsList
+            selectedDataset={selectedDataset}
+            setSelectedDataset={setSelectedDataset}
           />
         </div>
-      )}
+        {selectedDataset && (
+          <div className="flex flex-col items-center">
+            <DatasetTableCard
+              dataset={selectedDataset}
+              setDatasetHeaders={setDatasetHeaders}
+              setNumericalDatasetHeaders={setNumericalDatasetHeaders}
+            />
+            {datasetHeaders && (
+              <DatasetHeadersCard headers={headers} setHeaders={setHeaders} />
+            )}
+            <CalculateEpsilonCard
+              dataset_name={selectedDataset.name}
+              columns={numericalColumnNames}
+              setTempFileNames={setTempFileNames}
+            />
+            <DBSCANCard
+              dataset={selectedDataset}
+              columns={numericalColumnNames}
+              setTempFileNames={setTempFileNames}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
