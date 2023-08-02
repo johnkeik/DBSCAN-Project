@@ -8,6 +8,27 @@ import util from "util";
 const csvFolder = path.join(__dirname, "..", "..", "/datasets/public");
 const tempFolder = path.join(__dirname, "..", "..", "/datasets/temp");
 
+/**
+ * @openapi
+ * /api/fetchPublicDatasets:
+ *   get:
+ *     tags:
+ *       - "Dataset Manipulation"
+ *     summary: Fetch all public datasets
+ *     description: This endpoint retrieves all public datasets available in the CSV folder.
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the list of public datasets.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: string
+ *                 description: The name of the dataset (CSV file).
+ *       500:
+ *         description: Internal Server Error.
+ */
 export const fetchPublicDatasets: RequestHandler = async (req, res) => {
   fs.readdir(csvFolder, (err, files) => {
     if (err) {
@@ -21,7 +42,36 @@ export const fetchPublicDatasets: RequestHandler = async (req, res) => {
     res.status(200).json(csvFiles);
   });
 };
-
+/**
+ * @openapi
+ * /api/fetchPrivateDatasets:
+ *   get:
+ *     tags:
+ *       - "Dataset Manipulation"
+ *     summary: Fetch all private datasets for a specific user
+ *     description: This endpoint retrieves all private datasets available for a specific user. User is determined by the decoded email in the request body.
+ *     parameters:
+ *       - name: email
+ *         in: body
+ *         description: Email of the user
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the list of private datasets.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: string
+ *                 description: The name of the dataset (CSV file).
+ *       400:
+ *         description: Bad request. Could not find user.
+ *       500:
+ *         description: Internal Server Error.
+ */
 export const fetchPrivateDatasets: RequestHandler = async (req, res) => {
   if (req.body.decoded && req.body.decoded.email) {
     const user = await User.findByPk(req.body.decoded.email);
@@ -52,6 +102,49 @@ export const fetchPrivateDatasets: RequestHandler = async (req, res) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/fetchPublicDataset:
+ *   get:
+ *     tags:
+ *       - "Dataset Manipulation"
+ *     summary: Fetch a chunk of a public dataset
+ *     description: This endpoint retrieves a chunk of a public dataset available in the CSV folder. It paginates the dataset based on chunk index and page size.
+ *     parameters:
+ *       - name: isTempDataset
+ *         in: query
+ *         description: Indicates if the dataset is a temporary dataset
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: filename
+ *         in: query
+ *         description: The name of the dataset file
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: chunkIndex
+ *         in: query
+ *         description: The index of the chunk to fetch
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - name: pageSize
+ *         in: query
+ *         description: The size of each page in the chunk
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the dataset chunk.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/DatasetChunk'
+ *       500:
+ *         description: Internal Server Error.
+ */
 export const fetchPublicDataset: RequestHandler = (req, res) => {
   const isTempDataset = req.query.isTempDataset as string;
   const filename = req.query.filename as string;
@@ -107,6 +200,51 @@ export const fetchPublicDataset: RequestHandler = (req, res) => {
     });
 };
 
+/**
+ * @openapi
+ * /api/fetchPrivateDataset:
+ *   get:
+ *     tags:
+ *       - "Dataset Manipulation"
+ *     summary: Fetch a chunk of a private dataset
+ *     description: This endpoint retrieves a chunk of a private dataset for a specific user. It paginates the dataset based on chunk index and page size. User is determined by the decoded email in the request body.
+ *     parameters:
+ *       - name: filename
+ *         in: query
+ *         description: The name of the dataset file
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: chunkIndex
+ *         in: query
+ *         description: The index of the chunk to fetch
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - name: pageSize
+ *         in: query
+ *         description: The size of each page in the chunk
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - name: email
+ *         in: body
+ *         description: Email of the user
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the dataset chunk.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/DatasetChunk'
+ *       400:
+ *         description: Bad request. User not found.
+ *       500:
+ *         description: Internal Server Error.
+ */
 export const fetchPrivateDataset: RequestHandler = async (req, res) => {
   const filename = req.query.filename as string;
   const chunkIndex = parseInt(req.query.chunkIndex as string, 10) || 0; // Get the chunk index from the query parameter
@@ -173,6 +311,35 @@ export const fetchPrivateDataset: RequestHandler = async (req, res) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/datasets/deleteDataset:
+ *   delete:
+ *     tags:
+ *       - "Dataset Manipulation"
+ *     summary: Delete a dataset
+ *     description: This endpoint deletes a dataset for a particular user.
+ *     parameters:
+ *       - in: query
+ *         name: filename
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Name of the file to delete.
+ *       - in: query
+ *         name: fileType
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Type of the file (public or private).
+ *     responses:
+ *       200:
+ *         description: Successfully deleted the file.
+ *       400:
+ *         description: Could not find user.
+ *       500:
+ *         description: Something went wrong or Internal Server Error.
+ */
 const unlinkAsync = util.promisify(fs.unlink);
 export const deleteDataset: RequestHandler = async (req, res) => {
   if (req.body.decoded && req.body.decoded.email) {
@@ -213,6 +380,38 @@ export const deleteDataset: RequestHandler = async (req, res) => {
   }
 };
 
+/**
+ * @openapi
+ * /api/datasets/downloadDataset:
+ *   get:
+ *     tags:
+ *       - "Dataset Manipulation"
+ *     summary: Download a dataset
+ *     description: This endpoint allows a user to download a dataset.
+ *     parameters:
+ *       - in: query
+ *         name: filename
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Name of the file to download.
+ *       - in: query
+ *         name: isTempDataset
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Boolean value specifying if the dataset is a temporary dataset.
+ *     responses:
+ *       200:
+ *         description: Successfully downloaded the file.
+ *         content:
+ *           application/octet-stream:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       500:
+ *         description: Internal Server Error.
+ */
 export const downloadDataset: RequestHandler = (req, res) => {
   const isTempDataset = req.query.isTempDataset as string;
   const filename = req.query.filename as string;
@@ -229,6 +428,40 @@ export const downloadDataset: RequestHandler = (req, res) => {
   fileStream.pipe(res);
 };
 
+/**
+ * @openapi
+ * /api/datasets/uploadDataset:
+ *   post:
+ *     tags:
+ *       - "Dataset Manipulation"
+ *     summary: Upload a dataset
+ *     description: This endpoint allows a user to upload a dataset.
+ *     parameters:
+ *       - in: query
+ *         name: isPublic
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Boolean value specifying if the dataset is public.
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *             required:
+ *               - file
+ *     responses:
+ *       200:
+ *         description: File uploaded successfully.
+ *       400:
+ *         description: No file uploaded or Could not find user.
+ *       500:
+ *         description: Internal Server Error.
+ */
 export const uploadDataset: RequestHandler = async (req, res) => {
   const file = req.files?.file as UploadedFile | undefined;
   const isPublic = req.query.isPublic as string;

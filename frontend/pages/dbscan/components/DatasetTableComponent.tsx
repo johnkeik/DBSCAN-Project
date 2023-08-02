@@ -131,7 +131,7 @@ const DatasetTableCompoent = ({
   };
 
   return data ? (
-    <div className="flex flex-col s min-w-[100px] border-2 rounded-lg p-5 shadow-xl bg-white">
+    <div className="flex flex-col min-w-[100px] border-2 rounded-lg p-5 shadow-xl bg-white">
       <div className=" overflow-x-auto">
         <table className="table-auto min-w-full">
           <thead>

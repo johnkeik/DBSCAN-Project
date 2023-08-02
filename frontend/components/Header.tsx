@@ -6,7 +6,7 @@ const HeaderComponent = () => {
   const { openSigningModal, user, logout } = useAuth();
   const router = useRouter();
   return (
-    <div className=" fixed z-50 w-full h-auto py-5 px-28 bg-[#ffffff]/[0.1] border-b-[1px] border-white flex flex-row justify-between items-center gap-10">
+    <div className=" fixed z-[99999] w-full h-auto py-5 px-28 bg-[#ffffff]/[0.1] border-b-[1px] border-white flex flex-row justify-between items-center gap-10">
       <h1 className="font-extrabold text-transparent text-3xl bg-clip-text bg-gradient-to-r from-blue-600 to-violet-400">
         DBSCAN Web App
       </h1>
@@ -27,12 +27,7 @@ const HeaderComponent = () => {
           </a>
         </li>
         <li>
-          <a
-            href="https://docs.google.com/forms/d/e/1FAIpQLSfamx75X9wKlqzfjEXv0l4LmmAAi_xZeAx6xWhqt9CGyU5uww/viewform?usp=sf_link"
-            target="_blank"
-          >
-            Api Docs
-          </a>
+          <Link href={"/docs"}>Api-Docs</Link>
         </li>
         <li>
           <h1
