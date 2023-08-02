@@ -15,9 +15,9 @@ export default function App({
       <Head>
         <title>DBSCAN WebApp</title>
       </Head>
-      <div className="min-h-screen ">
+      <div className=" ">
         <HeaderComponent />
-        <div className="min-h-screen w-full pt-[200px]">
+        <div className="min-h-screen w-full">
           <Component {...pageProps} />
         </div>
       </div>

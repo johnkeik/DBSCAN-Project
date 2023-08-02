@@ -68,7 +68,7 @@ const DatasetsList = ({
   }, [publicDatasets, privateDatasets]);
 
   return (
-    <div className="w-[600px] flex flex-col min-w-[100px] border-2 rounded-lg p-5 shadow-xl">
+    <div className="w-[600px] flex flex-col min-w-[100px] border-2 rounded-lg p-5 shadow-xl bg-white">
       {loading ? (
         <Spin />
       ) : (

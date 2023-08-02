@@ -31,7 +31,7 @@ const DatasetHeadersCard = ({
   };
 
   return (
-    <div className="w-[600px] flex flex-col gap-3 min-w-[100px] border-2 rounded-lg p-5 shadow-xl mt-10">
+    <div className="w-[600px] flex flex-col gap-3 min-w-[100px] border-2 rounded-lg p-5 shadow-xl mt-10 bg-white">
       <h1>
         Headers that will be included for the optimal epsilon calculations:
       </h1>

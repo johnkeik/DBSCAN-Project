@@ -47,7 +47,7 @@ const CalculateEpsilonCard = ({
   };
 
   return (
-    <div className=" flex flex-col min-w-[100px] border-2 rounded-lg p-5 shadow-xl mt-10 ">
+    <div className=" flex flex-col min-w-[100px] border-2 rounded-lg p-5 shadow-xl mt-10 bg-white">
       <div className="flex flex-col justify-center">
         <h1 className="pb-2">
           Find optimal epsilon value based on K neighbors:

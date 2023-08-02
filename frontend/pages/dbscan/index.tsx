@@ -95,8 +95,8 @@ const DBSCAN = () => {
   });
 
   return (
-    <div className="flex flex-col items-center justify-center pb-[150px]">
-      <h1 className=" text-6xl pb-10">DBSCAN Appliance</h1>
+    <div className="flex flex-col items-center pt-[200px] min-h-screen bg-fixed bg-center bg-cover custom-background-img relative pb-[150px]">
+      <h1 className=" text-6xl pb-10 text-white">DBSCAN Appliance</h1>
       <DatasetsList
         selectedDataset={selectedDataset}
         setSelectedDataset={setSelectedDataset}

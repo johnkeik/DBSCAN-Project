@@ -80,7 +80,7 @@ const DBSCANCard = ({
   }, [showPlotModal]);
 
   return (
-    <div className="max-w-[900px] flex flex-col min-w-[100px] border-2 rounded-lg p-5 shadow-xl mt-10">
+    <div className="max-w-[900px] flex flex-col min-w-[100px] border-2 rounded-lg p-5 shadow-xl mt-10 bg-white">
       <h1 className="pb-2">DBSCAN</h1>
 
       <Form

@@ -35,3 +35,7 @@
     @apply hover:text-levanta-hover mr-5 duration-300 hover:scale-110 md:text-xl text-center underline;
   }
 }
+
+.custom-background-img {
+  background-image: url("../public/background.png");
+}
