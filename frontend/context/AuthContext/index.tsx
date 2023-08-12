@@ -1,10 +1,16 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Button, Form, Input, Modal } from "antd";
-import { fetchUserInfo, loginUser, registerUser } from "@/api/user";
+import {
+  fetchUserInfo,
+  forgotPassword,
+  loginUser,
+  registerUser,
+} from "@/api/auth";
 import Cookies from "js-cookie";
 import { User } from "@/types";
 import LoginForm from "./components/LoginForm";
 import SignupForm from "./components/SignupForm";
+import ForgotPasswordForm from "./components/ForgotPasswordForm";
 
 interface AuthContextType {
   access_token: string | null;
@@ -167,28 +173,14 @@ function AuthProvider({ children }: { children: any }): JSX.Element {
             />
           )}
           {page === "signup" && (
-            <SignupForm setPage={setPage} register={register} />
+            <SignupForm
+              setPage={setPage}
+              register={register}
+              message={message}
+            />
           )}
           {page === "forgot_password" && (
-            <>
-              <h1 className=" text-lg text-center">Forgot your password?</h1>
-              <div className="flex flex-col gap-4">
-                <h1 className="">
-                  In case you forgot your password please enter your email.
-                </h1>
-                <Input placeholder="Email" />
-              </div>
-
-              <div className="flex flex-col gap-3 justify-center">
-                <Button className="">Send email</Button>
-                <Button
-                  className=" bg-blue-600 hover:bg-blue-500"
-                  onClick={() => setPage("login")}
-                >
-                  <h1 className="text-white">Log In</h1>
-                </Button>
-              </div>
-            </>
+            <ForgotPasswordForm setPage={setPage} />
           )}
         </div>
       </Modal>

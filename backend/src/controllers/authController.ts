@@ -5,6 +5,9 @@ import { UniqueConstraintError } from "sequelize";
 import "dotenv/config";
 import jwt from "jsonwebtoken";
 import { generateApiKey } from "../utils";
+import crypto from "crypto";
+import { PasswordReset } from "../models/passResetTokens";
+import nodemailer from "nodemailer";
 
 /**
  * @openapi
@@ -173,7 +176,7 @@ export const register: RequestHandler = async (req, res) => {
  *     description: This endpoint fetches user information.
  *     responses:
  *       200:
- *         description: Successfully fetched user details.
+ *         description: Successfully fetched user details
  *         content:
  *           application/json:
  *             schema:
@@ -208,4 +211,54 @@ export const fetchUserInfo: RequestHandler = async (req, res) => {
   } else {
     return res.status(400).send("Could not find user");
   }
+};
+
+export const forgotPassword: RequestHandler = async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ where: { email } });
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  const token = crypto.randomBytes(64).toString("hex");
+  const expiresAt = new Date(Date.now() + 1000 * 60 * 60); // token expires in 1 hour
+
+  await PasswordReset.create({ userEmail: user.email, token, expiresAt });
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.zoho.eu",
+    port: 465,
+    secure: true,
+    auth: {
+      user: "autodbscan@zohomail.eu",
+      pass: "DB$CAN@1",
+    },
+    debug: true,
+  });
+
+  const mailOptions = {
+    from: "autodbscan@zohomail.eu",
+    to: user.email,
+    subject: "Password Reset",
+    html: `<div>
+              <h2>You are receiving this because you (or someone else) have requested the reset of the password for your account.</h2>
+              <h2>Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:</h2>
+              <p>http://localhost:3000/reset/${token}</p>
+              <br/>
+              <h2>If you did not request this, please ignore this email and your password will remain unchanged.</h2>
+           </div>`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log(error);
+      res.status(500).json({ message: "Error sending email" });
+    } else {
+      console.log("Email sent: " + info.response);
+      res.status(200).json({
+        message: "Password reset email sent successfully!",
+      });
+    }
+  });
 };

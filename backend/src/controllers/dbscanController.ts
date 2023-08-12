@@ -1,6 +1,8 @@
 import { spawn } from "child_process";
 import { RequestHandler } from "express";
 import path from "path";
+import pidusage from "pidusage";
+
 
 const csvFolder = path.join(__dirname, "..", "..", "/datasets/public");
 const tempFolder = path.join(__dirname, "..", "..", "/datasets/temp");
@@ -66,6 +68,7 @@ export const findEpsilonAsGuest: RequestHandler = (req, res) => {
     path.join(pythonScriptsFolder, "eps_calculator.py"),
     ...args,
   ]);
+
   let epsilon: string;
   pythonProcess.stdout.on("data", (data) => {
     epsilon = data.toString().trim().split("\n")[0];

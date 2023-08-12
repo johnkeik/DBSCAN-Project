@@ -48,75 +48,80 @@ const LoginForm = ({
     });
   };
   return (
-    <div className=" flex-1 flex flex-col h-26 gap-5">
-      <h1 className=" text-xl text-center">Login</h1>
-      <Form onFinish={handleSubmit} ref={formRef}>
-        <div className="flex flex-col  pb-3 mb-5">
-          <Form.Item
-            name="username"
-            rules={[
-              {
-                required: true,
-                message: "Please enter your email!",
-              },
-            ]}
+    <Form
+      onFinish={handleSubmit}
+      ref={formRef}
+      className="flex flex-col justify-center items-center"
+    >
+      <h1 className=" text-xl pb-5">Login</h1>
+
+      <Form.Item
+        name="username"
+        rules={[
+          {
+            required: true,
+            message: "Please enter your email!",
+          },
+        ]}
+      >
+        <Input placeholder="Email" autoComplete="on" size="large" />
+      </Form.Item>
+      <Form.Item
+        name="password"
+        rules={[
+          {
+            required: true,
+            message: "Please input your password!",
+          },
+        ]}
+      >
+        <Input.Password
+          placeholder="Password"
+          type="password"
+          autoComplete="on"
+          size="large"
+        />
+      </Form.Item>
+      <div className="flex justify-end w-full">
+        <h1
+          className=" flex-wrap inline-block text-blue-900  hover:text-blue-700 underline hover:cursor-pointer"
+          onClick={() => setPage("forgot_password")}
+        >
+          Forgot Password?
+        </h1>
+      </div>
+
+      <div className="flex flex-col w-full  justify-center pt-2">
+        {message && (
+          <h1
+            className={`w-full ${
+              message.type === "error" ? " text-red-800" : " text-green-600"
+            }`}
           >
-            <Input placeholder="Email" autoComplete="on" />
-          </Form.Item>
-          <Form.Item
-            name="password"
-            rules={[
-              {
-                required: true,
-                message: "Please input your password!",
-              },
-            ]}
+            {message.message}
+          </h1>
+        )}
+        <Form.Item>
+          <Button
+            htmlType="submit"
+            className=" w-full mb-3"
+            loading={loading}
+            style={{ backgroundColor: "blue", color: "white" }}
+            size="large"
           >
-            <Input.Password
-              placeholder="Password"
-              type="password"
-              autoComplete="on"
-            />
-          </Form.Item>
-          <div className="flex justify-end ">
-            <h1
-              className=" flex-wrap inline-block text-blue-900  hover:text-blue-700 underline hover:cursor-pointer"
-              onClick={() => setPage("forgot_password")}
-            >
-              Forgot Password?
-            </h1>
-          </div>
-        </div>
-        <div className="flex flex-col  justify-center">
-          {message && (
-            <h1
-              className={`w-full ${
-                message.type === "error" ? " text-red-800" : " text-green-600"
-              }`}
-            >
-              {message.message}
-            </h1>
-          )}
-          <Form.Item>
-            <Button
-              htmlType="submit"
-              className=" w-full mb-3"
-              loading={loading}
-              style={{ backgroundColor: "blue", color: "white" }}
-            >
-              Log In
-            </Button>
-            <Button
-              onClick={() => setPage("signup")}
-              className="w-full"
-              disabled={loading}
-            >
-              Sign Up
-            </Button>
-          </Form.Item>
-        </div>
-      </Form>
-    </div>
+            Log In
+          </Button>
+          <Button
+            onClick={() => setPage("signup")}
+            className="w-full"
+            disabled={loading}
+            size="large"
+          >
+            Sign Up
+          </Button>
+        </Form.Item>
+      </div>
+    </Form>
   );
 };
 

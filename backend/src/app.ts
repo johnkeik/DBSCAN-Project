@@ -1,5 +1,5 @@
 import express, { RequestHandler } from "express";
-import userRoutes from "./routes/userRouter";
+import userRoutes from "./routes/authRouter";
 import datasetRoutes from "./routes/datasetsRouter";
 import dbscanRoutes from "./routes/dbscanRouter";
 import fileRoutes from "./routes/filesRouter";
