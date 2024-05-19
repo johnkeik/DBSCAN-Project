@@ -27,7 +27,7 @@ To run AutoDBSCAN locally, follow these steps:
 ### Steps
 1. Clone the repository
 ```
-git clone https://github.com/yourusername/AutoDBSCAN.git
+git clone [https://github.com/yourusername/AutoDBSCAN.git](https://github.com/johnkeik/DBSCAN-Project.git)
 cd AutoDBSCAN
 ```
 
